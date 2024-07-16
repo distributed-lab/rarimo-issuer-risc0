@@ -4,8 +4,18 @@
 use methods::{METHOD_ELF, METHOD_ID};
 
 use issuer_core::{CountNullifiersInput, CountNullifiersJournal};
-use risc0_zkp::core::digest::Digest;
 use risc0_zkvm::{default_prover, ExecutorEnv};
+use serde_json::from_reader;
+use std::fs::File;
+use std::path::PathBuf;
+use structopt::StructOpt;
+
+/// Command line arguments for the program.
+#[derive(Debug, StructOpt)]
+struct CliArgs {
+    /// Path to the JSON input file.
+    input_file: PathBuf,
+}
 
 fn main() {
     // Initialize tracing. In order to view logs, run `RUST_LOG=info cargo run`
@@ -13,14 +23,18 @@ fn main() {
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
         .init();
 
-    // Structure the input.
-    let input = CountNullifiersInput {
-        document_hash: vec![],
-        blinder: vec![],
-        salts: vec![],
-        merkle_root: Digest::default(),
-        merkle_proofs: vec![],
-    };
+    println!("Starting the program");
+
+    // Parse command line arguments
+    let args = CliArgs::from_args();
+
+    println!("Parsed the CLI arg");
+
+    // Open the JSON input file
+    let file = File::open(args.input_file).expect("Unable to open input file");
+
+    // Deserialize JSON input to CountNullifiersInput
+    let input: CountNullifiersInput = from_reader(file).expect("Unable to parse JSON input");
 
     // Initialize the environment and write an input.
     let env = ExecutorEnv::builder()

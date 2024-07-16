@@ -9,6 +9,8 @@ fn main() {
     // Read the host input from execution environment.
     let input: CountNullifiersInput = env::read();
 
+    env::log(&format!("Input: {:?}", input));
+
     // Input validation.
     assert_eq!(
         input.merkle_proofs.len(),
@@ -44,7 +46,7 @@ fn main() {
             let mut bytes = salt.clone();
             bytes.extend(nullifier_base.as_slice());
 
-           *Impl::hash_bytes(&bytes)
+            *Impl::hash_bytes(&bytes)
         };
 
         let is_verified = proof.verify(&nullifier, &input.merkle_root, hashfn);

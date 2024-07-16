@@ -1,3 +1,7 @@
+mod utils;
+
+use crate::utils::*;
+
 use risc0_zkp::core::{digest::Digest, hash::HashFn};
 use risc0_zkp::field::baby_bear::BabyBear;
 use serde::{Deserialize, Serialize};
@@ -7,12 +11,16 @@ use std::fmt;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CountNullifiersInput {
     /// Passport/Document hash.
+    #[serde(deserialize_with = "deserialize_hex_string")]
     pub document_hash: Vec<u8>,
     /// Legacy value - left for compatibility purposes.
+    #[serde(deserialize_with = "deserialize_hex_string")]
     pub blinder: Vec<u8>,
     /// Vector of salts for nullifiers composition.
+    #[serde(deserialize_with = "deserialize_hex_string_vec")]
     pub salts: Vec<Vec<u8>>,
     /// Merkle Root of all nullifiers tree.
+    #[serde(deserialize_with = "deserialize_digest")]
     pub merkle_root: Digest,
     /// Merkle branches with index for nullifiers inclusion proofs.
     pub merkle_proofs: Vec<MerkleProof>,
@@ -25,7 +33,8 @@ pub struct MerkleProof {
     pub index: u32,
     /// Sibling digests on the path from the root to the leaf.
     /// Does not include the root and the leaf.
-    pub digests: Vec<Digest>,
+    #[serde(deserialize_with = "deserialize_digest_vec")]
+    pub branch: Vec<Digest>,
 }
 
 impl MerkleProof {
@@ -38,7 +47,7 @@ impl MerkleProof {
     pub fn root(&self, leaf: &Digest, hashfn: &dyn HashFn<BabyBear>) -> Digest {
         let mut cur = *leaf;
         let mut cur_index = self.index;
-        for sibling in &self.digests {
+        for sibling in &self.branch {
             cur = if cur_index & 1 == 0 {
                 *hashfn.hash_pair(&cur, sibling)
             } else {

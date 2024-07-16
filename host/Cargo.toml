@@ -8,5 +8,7 @@ methods = { path = "../methods" }
 risc0-zkvm = { version = "1.0.1" }
 risc0-zkp = { version = "1.0.1", default-features = false }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-# serde = "1.0.204"
 issuer-core = {path = "./../core"}
+structopt = "0.3.26"
+hex = "0.4.3"
+serde_json = "1.0.120"
