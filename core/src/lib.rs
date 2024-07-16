@@ -1,9 +1,7 @@
-extern crate risc0_zkp;
-extern crate serde;
-
 use risc0_zkp::core::{digest::Digest, hash::HashFn};
 use risc0_zkp::field::baby_bear::BabyBear;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 /// Host input to the guest program.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -61,4 +59,14 @@ pub struct CountNullifiersJournal {
     pub document_commitment: Vec<u8>,
     /// Amount of duplicate nullifiers for particular document hash.
     pub total_duplicates: u64,
+}
+
+impl fmt::Display for CountNullifiersJournal {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "\n  blinder commitment: {:?},\n  document commitment: {:?},\n  total duplicates: {}\n",
+            self.blinder_commitment, self.document_commitment, self.total_duplicates
+        )
+    }
 }

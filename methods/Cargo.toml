@@ -1,6 +1,7 @@
 [package]
 name = "methods"
 version = "0.1.0"
+edition = "2021"
 
 [build-dependencies]
 risc0-build = { version = "1.0.1" }

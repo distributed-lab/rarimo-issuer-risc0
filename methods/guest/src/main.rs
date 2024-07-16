@@ -1,10 +1,6 @@
-extern crate issuer_core;
-extern crate risc0_zkp;
-extern crate risc0_zkvm;
-
 use issuer_core::{CountNullifiersInput, CountNullifiersJournal};
 use risc0_zkp::core::hash::sha::Sha256HashSuite;
-use risc0_zkp::core::{digest::Digest, hash::HashSuite};
+use risc0_zkp::core::hash::HashSuite;
 use risc0_zkp::field::baby_bear::BabyBear;
 use risc0_zkvm::guest::env;
 use risc0_zkvm::sha::{Impl, Sha256};
@@ -27,7 +23,7 @@ fn main() {
 
     // Compute document commitment.
     let document_commitment = {
-        let mut bytes = input.document_hash;
+        let mut bytes = input.document_hash.clone();
         bytes.extend(input.blinder.iter());
 
         Impl::hash_bytes(bytes.as_slice()).as_bytes().to_vec()
@@ -45,11 +41,10 @@ fn main() {
 
     for (salt, proof) in input.salts.iter().zip(input.merkle_proofs) {
         let nullifier = {
-            let mut bytes = salt;
+            let mut bytes = salt.clone();
             bytes.extend(nullifier_base.as_slice());
 
-            let nullifier = Impl::hash_bytes(bytes).as_bytes().to_vec().as_slice();
-            Digest::from(nullifier)
+           *Impl::hash_bytes(&bytes)
         };
 
         let is_verified = proof.verify(&nullifier, &input.merkle_root, hashfn);
