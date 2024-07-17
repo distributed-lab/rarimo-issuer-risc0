@@ -71,7 +71,7 @@ blinder = randbytes(BLINDER_BYTES)
 salts = [randbytes(SALT_BYTES) for _ in range(DUPLICATE_COUNT)]
 
 # Compute nullifiers
-nullifiers = [hash_bytes(blinder + salt + document_hash) for salt in salts]
+nullifiers = [hash_bytes(salt + blinder + document_hash) for salt in salts]
 
 # Generate additional leaves and shuffle
 leaves = nullifiers + [randbytes(DIGEST_BYTES) for _ in range(MERKLE_LEAVES_COUNT - DUPLICATE_COUNT)]

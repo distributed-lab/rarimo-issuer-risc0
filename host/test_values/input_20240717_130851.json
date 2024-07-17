@@ -1,0 +1,25 @@
+{
+    "document_hash": "6ce6dcb1fa4d717b48eaf4423c1c4bfdde75f14bf9a8bbd225857483b84a274f",
+    "blinder": "719b667680c4a61ba65019d0f4151df976e960a97b5304ffeedb456d9a8d6bda",
+    "salts": [
+        "1261134229d6027244dddf83aac8424948292d96f4cc6c42ac9c5ef2f8473f0b",
+        "ae909dd71db9d3ce465f0d6afe89cf4a9af4839384e9767ef9809461afd4e256"
+    ],
+    "merkle_root": "ab8df9a7e3b3653d4b09759b7fb0b27985fb4d0488f7a1fc48d969180d31c9a0",
+    "merkle_proofs": [
+        {
+            "index": 0,
+            "branch": [
+                "2e29328758bb5e3952af15eedfc0f2651f0e5298f1b06a42456b68f91954f6c1",
+                "92dbe58fd1d2bbb23bf5e43bcce5cfe12bb6d651f3b1bc5208f089a14a6de055"
+            ]
+        },
+        {
+            "index": 3,
+            "branch": [
+                "f55938b4c5537cf78a6ecd101e28d75ba69e9e9e5c26e4ce0b07602ee484acc7",
+                "ab4bf037b5e0a5d4e6f8983b2cf9ae50b4a373c9de7c245e044c6e5f7e1909d6"
+            ]
+        }
+    ]
+}

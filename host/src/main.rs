@@ -23,12 +23,8 @@ fn main() {
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
         .init();
 
-    println!("Starting the program");
-
     // Parse command line arguments
     let args = CliArgs::from_args();
-
-    println!("Parsed the CLI arg");
 
     // Open the JSON input file
     let file = File::open(args.input_file).expect("Unable to open input file");
