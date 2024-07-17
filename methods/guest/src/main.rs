@@ -1,6 +1,7 @@
-use issuer_core::{CountNullifiersInput, CountNullifiersJournal};
 use risc0_zkvm::guest::env;
 use risc0_zkvm::sha::{Impl, Sha256};
+
+use issuer_core::{CountNullifiersInput, CountNullifiersJournal};
 
 fn main() {
     // Read the host input from execution environment.
@@ -14,34 +15,32 @@ fn main() {
     );
 
     // Compute blinder commitment.
-    let blinder_commitment = *Impl::hash_bytes(input.blinder.as_slice());
+    let blinder_commitment = *Impl::hash_bytes(&input.blinder);
 
     // Compute document commitment.
     let document_commitment = {
-        let mut bytes = Vec::from(input.document_hash.as_bytes());
-        bytes.extend(&input.blinder[..]);
-
-        *Impl::hash_bytes(bytes.as_slice())
+        let preimage = [input.document_hash.as_bytes(), &input.blinder].concat();
+        *Impl::hash_bytes(&preimage)
     };
 
-    // Since nullifier formula = hash(salt[i] || blinder || document hash)
+    // Since nullifier formula is `hash(salt[i] || blinder || document hash)`
     // we are preparing 2 and 3 operands.
-    let mut nullifier_base = input.blinder;
-    nullifier_base.extend(input.document_hash.as_bytes());
+    let nullifier_base = [&input.blinder, input.document_hash.as_bytes()].concat();
 
-    let mut total_duplicates = 0;
+    // Compute total duplicates.
+    let total_duplicates = input
+        .salts
+        .iter()
+        .zip(&input.merkle_proofs)
+        .map(|(salt, proof)| {
+            let nullifier = {
+                let preimage = [&salt[..], &nullifier_base].concat();
+                *Impl::hash_bytes(&preimage)
+            };
 
-    for (salt, proof) in input.salts.iter().zip(input.merkle_proofs) {
-        let nullifier = {
-            let mut bytes = salt.clone();
-            bytes.extend(nullifier_base.as_slice());
-
-            *Impl::hash_bytes(&bytes)
-        };
-
-        let is_verified = proof.verify(&nullifier, &input.merkle_root);
-        total_duplicates += is_verified as u64;
-    }
+            proof.verify(&nullifier, &input.merkle_root) as u64
+        })
+        .sum();
 
     let journal = CountNullifiersJournal {
         blinder_commitment,

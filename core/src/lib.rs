@@ -2,9 +2,10 @@ mod utils;
 
 use crate::utils::*;
 
-use hex;
 use risc0_zkp::core::digest::Digest;
 use risc0_zkp::core::hash::sha::{Impl, Sha256};
+
+use hex;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -61,24 +62,21 @@ impl MerkleProof {
 
     /// Calculate the root of this branch by iteratively hashing, starting from the leaf.
     pub fn root(&self, leaf: &Digest) -> Digest {
-        let mut cur = *leaf;
-        let mut cur_index = self.index;
-        for sibling in &self.branch {
-            let preimage = if cur_index & 1 == 0 {
-                let mut tmp = Vec::from(cur.as_bytes());
-                tmp.extend_from_slice(sibling.as_bytes());
-                tmp
-            } else {
-                let mut tmp = Vec::from(sibling.as_bytes());
-                tmp.extend_from_slice(cur.as_bytes());
-                tmp
-            };
-            cur = *Impl::hash_bytes(preimage.as_slice());
+        let mut current_digest = *leaf;
+        let mut current_index = self.index;
 
-            cur_index >>= 1;
+        for sibling in &self.branch {
+            let preimage = match current_index & 1 {
+                0 => [current_digest.as_bytes(), sibling.as_bytes()].concat(),
+                1 => [sibling.as_bytes(), current_digest.as_bytes()].concat(),
+                _ => unreachable!(),
+            };
+
+            current_digest = *Impl::hash_bytes(&preimage);
+            current_index >>= 1;
         }
 
-        cur
+        current_digest
     }
 }
 

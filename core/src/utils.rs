@@ -1,4 +1,5 @@
 use risc0_zkp::core::digest::Digest;
+
 use serde::de::{self};
 use serde::{ser::SerializeSeq, Deserialize, Deserializer, Serializer};
 
