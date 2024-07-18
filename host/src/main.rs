@@ -8,6 +8,7 @@ use serde_json::from_reader;
 use std::fs::File;
 use std::path::PathBuf;
 use structopt::StructOpt;
+use std::time::Instant;
 
 use risc0_zkvm::{default_prover, ExecutorEnv};
 
@@ -42,9 +43,13 @@ fn main() {
 
     let prover = default_prover();
 
+    let start = Instant::now();
     // Proof information by proving the specified ELF binary.
     // This struct contains the receipt along with statistics about execution of the guest
     let prove_info = prover.prove(env, METHOD_ELF).unwrap();
+
+    let duration = start.elapsed();
+    println!("Proving time: {:?}", duration);
 
     let receipt = prove_info.receipt;
     let output: CountNullifiersJournal = receipt.journal.decode().unwrap();

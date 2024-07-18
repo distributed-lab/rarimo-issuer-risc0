@@ -61,3 +61,8 @@ RUST_LOG="[executor]=info" RISC0_DEV_MODE=1 cargo run -- <path-to-input-file>
 The main cryptographical primitive in this ZK scheme is a hashing function.
 Even though examples like `Pedersen` or `Poseidon` are known to be ZK-friendly, Risc0 has extensive support
 for `SHA256`. It is hardware accellerated and utilized in this project unlike circom implementation.
+
+## Benchmarks
+
+Project has been tested for computational efficiency with a variety of inputs.
+You can examine results in [Benchmark.md](./BENCHMARK.md)
